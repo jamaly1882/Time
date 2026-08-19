@@ -1,0 +1,22 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace "com.azal.water"
+    compileSdk flutter.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.azal.water"
+        minSdk 23
+        targetSdk flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+    }
+}
+
+flutter {
+    source "../.."
+}
