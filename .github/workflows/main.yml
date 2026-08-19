@@ -1,5 +1,0 @@
-flutter clean
-rm -rf android/.gradle
-rm -rf android/app/build
-flutter pub get
-flutter build apk --release
