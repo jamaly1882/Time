@@ -1,8 +1,59 @@
-- name: Get Dependencies
-  run: flutter pub get
+name: Build Flutter APK
 
-- name: Analyze
-  run: flutter analyze
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
-- name: Build APK
-  run: flutter build apk --release
+jobs:
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: stable
+          cache: true
+
+      - name: Flutter Doctor
+        run: flutter doctor -v
+
+      - name: Clean Project
+        run: |
+          flutter clean
+          rm -rf .dart_tool
+          rm -rf build
+          rm -rf android/.gradle
+          rm -rf android/app/build
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Check Android V1 Embedding
+        run: |
+          echo "===== SEARCH ANDROID V1 ====="
+          grep -RniE \
+            "io\.flutter\.app|io\.flutter\.plugin\.common\.PluginRegistry|registerWith" \
+            android .dart_tool \
+            --exclude-dir=build \
+            || true
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: time-reminder-release
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
